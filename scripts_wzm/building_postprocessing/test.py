@@ -5,19 +5,23 @@
 """
 
 from postprocessing import PostProcessing
+import time
 
 if __name__ == '__main__':
     postprocessing_tmp = PostProcessing()
 
     
     ######################################## 测试第一个功能 #####################################################
-    shp_file_path = "change.shp"
+    start_time = time.process_time_ns()
+    shp_file_path = "E:/MyProject/DataSet/BuildingPostProcessing/shp/change.shp"
     out_shp_file_name = "function1"
     threshold = 100
     postprocessing_tmp.remove_small_area(shp_file_path, out_shp_file_name, threshold)
+    end_time = time.process_time_ns()
+    print("total time(ms): " + str((end_time - start_time) / 1000000))
     print("功能一完成...")
 
-    
+    """
     ######################################## 测试第二个功能 #####################################################
     shp_file_path = "change.shp"
     out_shp_file_name = "function2"
@@ -47,3 +51,4 @@ if __name__ == '__main__':
     out_shp_file_name = "function5"
     postprocessing_tmp.get_minimum_rotated_rectangle(shp_file_path, out_shp_file_name)
     print("功能五完成...")
+    """

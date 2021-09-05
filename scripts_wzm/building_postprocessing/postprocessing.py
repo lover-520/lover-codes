@@ -33,7 +33,11 @@ class PostProcessing:
         tgt_srs.ImportFromEPSG(3857)
         transform = osr.CoordinateTransformation(src_srs, tgt_srs)
 
-        tgt_datasource  = driver.CreateDataSource(os.path.split(shp_file_path)[0])
+        if os.path.exists(os.path.join(os.path.split(shp_file_path)[0]+'/', output_shp_file_name+'.shp')):
+            driver.DeleteDataSource(os.path.join(os.path.split(shp_file_path)[0]+'/', output_shp_file_name+'.shp'))
+
+        tgt_datasource = driver.CreateDataSource(os.path.split(shp_file_path)[0])
+        # from ipdb import set_trace;set_trace()
         tgt_geomtype = ogr.wkbPolygon
         tgt_layer = tgt_datasource.CreateLayer(output_shp_file_name, srs=tgt_srs, geom_type=tgt_geomtype)
         # from ipdb import set_trace; set_trace()
