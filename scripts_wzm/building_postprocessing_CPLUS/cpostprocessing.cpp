@@ -14,12 +14,12 @@ CPostProcessing::~CPostProcessing()
 {
 }
 
-/*´òÓ¡shpÎÄ¼şµÄÊôĞÔ±íĞÅÏ¢*/
+/*æ‰“å°shpæ–‡ä»¶çš„å±æ€§è¡¨ä¿¡æ¯*/
 int CPostProcessing::PrintShp(string shp_file_path) {
-    GDALAllRegister();  //×¢²áËùÓĞÄÚÖÃµ½GDAL/OGRÖĞµÄ¸ñÊ½Çı¶¯³ÌĞò
+    GDALAllRegister();  //æ³¨å†Œæ‰€æœ‰å†…ç½®åˆ°GDAL/OGRä¸­çš„æ ¼å¼é©±åŠ¨ç¨‹åº
     GDALDataset* poDS;
-    CPLSetConfigOption("SHAPE_ENCODING", "");  //½â¾öÖĞÎÄÂÒÂëÎÊÌâ
-    //¶ÁÈ¡shpÎÄ¼ş
+    CPLSetConfigOption("SHAPE_ENCODING", "");  //è§£å†³ä¸­æ–‡ä¹±ç é—®é¢˜
+    //è¯»å–shpæ–‡ä»¶
     poDS = (GDALDataset*)GDALOpenEx(shp_file_path.c_str(), GDAL_OF_VECTOR, NULL, NULL, NULL);
     if (poDS == NULL) {
         cout << "Open failed.\n%s";
@@ -27,13 +27,13 @@ int CPostProcessing::PrintShp(string shp_file_path) {
     }
 
     OGRLayer* poLayer;
-    poLayer = poDS->GetLayer(0); //¶ÁÈ¡²ã
+    poLayer = poDS->GetLayer(0); //è¯»å–å±‚
     OGRFeature* poFeature;
 
-    poLayer->ResetReading();  // ¿ªÊ¼¶ÁÈ¡¸ÃÍ¼²ãÖĞµÄÃ¿Ò»ĞĞ
+    poLayer->ResetReading();  // å¼€å§‹è¯»å–è¯¥å›¾å±‚ä¸­çš„æ¯ä¸€è¡Œ
     int numFeature = 0;
     while ((poFeature = poLayer->GetNextFeature()) != NULL) {
-        // »ñÈ¡×Ö¶ÎÊôĞÔ
+        // è·å–å­—æ®µå±æ€§
         if (!numFeature) {
             int numField = poFeature->GetFieldCount();
 
@@ -48,7 +48,7 @@ int CPostProcessing::PrintShp(string shp_file_path) {
         poGeometry = poFeature->GetGeometryRef();
         OGRPolygon* pPolygon = (OGRPolygon*)poGeometry->clone();
         double area = pPolygon->get_Area();
-        //cout << "Ãæ»ı£º" << pPolygon->get_Area() << endl;
+        //cout << "é¢ç§¯ï¼š" << pPolygon->get_Area() << endl;
         /*
         if (poGeometry != NULL) {
             OGRwkbGeometryType pGeoType = poGeometry->getGeometryType();
@@ -61,7 +61,7 @@ int CPostProcessing::PrintShp(string shp_file_path) {
             }
             else if (pGeoType == wkbPolygon25D) {
                 OGRPolygon* pPolygon = (OGRPolygon*)poGeometry->clone();
-                cout << "Ãæ»ı£º" << pPolygon->get_Area() << endl;
+                cout << "é¢ç§¯ï¼š" << pPolygon->get_Area() << endl;
             }
         }*/
 
@@ -100,14 +100,14 @@ int CPostProcessing::PrintShp(string shp_file_path) {
 }
 
 int CPostProcessing::RemoveSmallArea(string shp_file_path, string output_shp_file_path, int threshold) {
-    GDALAllRegister();  //GDAL×¢²áËùÓĞÇı¶¯
-    GDALDataset* poDS;  //¼ÓÔØÊı¾İ
+    GDALAllRegister();  //GDALæ³¨å†Œæ‰€æœ‰é©±åŠ¨
+    GDALDataset* poDS;  //åŠ è½½æ•°æ®
     poDS = (GDALDataset*)GDALOpenEx(shp_file_path.c_str(), GDAL_OF_VECTOR, NULL, NULL, NULL);
     if (poDS == NULL) {
         cout << "open failed!" << endl;
         exit(1);
     }
-    //¶ÁÈ¡²ã
+    //è¯»å–å±‚
     OGRLayer* poLayer;
     poLayer = poDS->GetLayer(0);
     poLayer->ResetReading();
