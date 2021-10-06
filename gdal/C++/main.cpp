@@ -3,32 +3,34 @@
 using namespace std;
 
 #include <ctime>
-#include <windows.h>
+// #include <windows.h>
 
 #include "gdalshp.h"
 
 clock_t start_time, end_time;
 
 int main(){
-    LARGE_INTEGER t1, t2, tc;
-    QueryPerformanceFrequency(&tc);
-    QueryPerformanceCounter(&t1);
+    // LARGE_INTEGER t1, t2, tc;
+    // QueryPerformanceFrequency(&tc);
+    // QueryPerformanceCounter(&t1);
+    clock_t start_time, end_time;
 
-    //start_time=clock();
+    start_time=clock();
 
     CGdalShp cshp = CGdalShp();
     for (int i = 0; i < 100; i++) {
         cshp.GetShp("C:/Users/wzm00/Desktop/test/testgdal/Export_Output_2.shp");
+        cout<<i<<endl;
     }
     
     
     //system("pause");
-    //end_time = clock();
-    //double total_time = (double)(end_time) - (double)(start_time) * 1000 / CLOCKS_PER_SEC;
-    //cout << "total time(ms): " << total_time << endl;
-    QueryPerformanceCounter(&t2);
-    double time = (double)(t2.QuadPart - t1.QuadPart) / (double)tc.QuadPart * 1000;
-    cout << "time = " << time << "ms" << endl;  //Êä³öÊ±¼ä£¨µ¥Î»£º£ó£©
+    end_time = clock();
+    double total_time = (double)(end_time) - (double)(start_time) * 1000 / CLOCKS_PER_SEC;
+    cout << "total time(ms): " << total_time << endl;
+    // QueryPerformanceCounter(&t2);
+    // double time = (double)(t2.QuadPart - t1.QuadPart) / (double)tc.QuadPart * 1000;
+    // cout << "time = " << time << "ms" << endl;  //ï¿½ï¿½ï¿½Ê±ï¿½ä£¨ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
     return 1;
 
 
@@ -39,17 +41,17 @@ int main(){
     //int i = 0;
     //while ((poFeature = poLayer->GetNextFeature()) != NULL)
     //{
-    //    // if (poFeature->GetFieldAsDouble("AREA") < 80000) continue; //È¥µôÃæ»ý¹ýÐ¡µÄpolygon
+    //    // if (poFeature->GetFieldAsDouble("AREA") < 80000) continue; //È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½polygon
     //    OGRGeometry* mPolygon = poFeature->GetGeometryRef();
     //    
     //    i = i++;
     //    cout << i << "  ";
     //    OGRFeatureDefn* poFDefn = poLayer->GetLayerDefn();
     //    int iField;
-    //    int n = poFDefn->GetFieldCount(); //»ñµÃ×Ö¶ÎµÄÊýÄ¿£¬²»°üÀ¨Ç°Á½¸ö×Ö¶Î£¨FID,Shape);
+    //    int n = poFDefn->GetFieldCount(); //ï¿½ï¿½ï¿½ï¿½Ö¶Îµï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶Î£ï¿½FID,Shape);
     //    for (iField = 0; iField < n; iField++)
     //    {
-    //        //Êä³öÃ¿¸ö×Ö¶ÎµÄÖµ
+    //        //ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Ö¶Îµï¿½Öµ
     //        OGRFieldDefn* poField = poFeature->GetFieldDefnRef(iField);
     //        cout << poField->GetNameRef() << endl;
     //        cout << poFeature->GetFieldAsString(iField) << "    ";
@@ -70,7 +72,7 @@ int main(){
             }
             else if (pGeoType == wkbPolygon25D) {
                 OGRPolygon* pPolygon = (OGRPolygon*)poGeometry->clone();
-                cout << "Ãæ»ý£º" << pPolygon->get_Area() << endl;
+                cout << "ï¿½ï¿½ï¿½ï¿½ï¿½" << pPolygon->get_Area() << endl;
             }
         }*/
 

@@ -17,17 +17,16 @@ class PostProcessing:
     def __init__(self, shp_file_path):
         self.shp_file_path = shp_file_path
 
-    def remove_small_area(self, shp_file_path, output_shp_file_name="output", threshold=0):
+    def remove_small_area(self, output_shp_file_name="output", threshold=0):
         """
         @function: 去除噪点环（根据面积阈值去除较小面积的多边形）;(在原shp文件的同级目录下生成一个新的名为output_shp_file_name的shp文件)
         @params:
-        * shp_file_path: 原始的待处理的shp文件
         * output_shp_file_name: 输出的shp文件名，不要加.shp后缀
         * threshold: 面积阈值
         @return:
         """
         driver = ogr.GetDriverByName("ESRI Shapefile")
-        datasource = driver.Open(shp_file_path, 1)
+        datasource = driver.Open(self.shp_file_path, 1)
         layer = datasource.GetLayer()
 
         src_srs = layer.GetSpatialRef()  # 获取原始的坐标系或投影
@@ -35,10 +34,10 @@ class PostProcessing:
         tgt_srs.ImportFromEPSG(3857)
         transform = osr.CoordinateTransformation(src_srs, tgt_srs)
 
-        if os.path.exists(os.path.join(os.path.split(shp_file_path)[0] + '/', output_shp_file_name + '.shp')):
-            driver.DeleteDataSource(os.path.join(os.path.split(shp_file_path)[0] + '/', output_shp_file_name + '.shp'))
+        if os.path.exists(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp')):
+            driver.DeleteDataSource(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp'))
 
-        tgt_datasource = driver.CreateDataSource(os.path.split(shp_file_path)[0])
+        tgt_datasource = driver.CreateDataSource(os.path.split(self.shp_file_path)[0])
         # from ipdb import set_trace;set_trace()
         tgt_geomtype = ogr.wkbPolygon
         tgt_layer = tgt_datasource.CreateLayer(output_shp_file_name, srs=tgt_srs, geom_type=tgt_geomtype)
@@ -65,24 +64,26 @@ class PostProcessing:
         datasource.Destroy()
         tgt_datasource.Destroy()
 
-    def points_simplification(self, shp_file_path, output_shp_file_name):
+    def points_simplification(self, output_shp_file_name):
         """
         @function: 多边形点数化简，依次遍历每一个多边形的所有点，去掉偶数个;(在原shp文件的同级目录下生成一个新的名为output_shp_file_name的shp文件)
         @params:
-        * shp_file_path: 原始的待处理的shp文件
         * output_shp_file_name: 输出的shp文件名，不要加.shp后缀
         @return:
         """
         driver = ogr.GetDriverByName("ESRI Shapefile")
-        datasource = driver.Open(shp_file_path, 1)
+        datasource = driver.Open(self.shp_file_path, 1)
         layer = datasource.GetLayer()
 
         src_srs = layer.GetSpatialRef()  # 获取原始的坐标系或投影
         tgt_srs = osr.SpatialReference()  # 获取目标的坐标系或投影， web mercator
         tgt_srs.ImportFromEPSG(3857)
         transform = osr.CoordinateTransformation(src_srs, tgt_srs)
+        
+        if os.path.exists(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp')):
+            driver.DeleteDataSource(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp'))
 
-        tgt_datasource = driver.CreateDataSource(os.path.split(shp_file_path)[0])
+        tgt_datasource = driver.CreateDataSource(os.path.split(self.shp_file_path)[0])
         tgt_geomtype = ogr.wkbPolygon
         tgt_layer = tgt_datasource.CreateLayer(output_shp_file_name, srs=tgt_srs, geom_type=tgt_geomtype)
         layerDefinition = layer.GetLayerDefn()  # 获取图层的字段信息
@@ -112,25 +113,27 @@ class PostProcessing:
         datasource.Destroy()
         tgt_datasource.Destroy()
 
-    def remove_redundancy_points(self, shp_file_path, output_shp_file_name, angle_threshold=5):
+    def remove_redundancy_points(self, output_shp_file_name, angle_threshold=5):
         """
         @function: 去除冗余点，连续三个点的夹角少于某一阈值，中间点就是冗余点；（在原shp文件的同级目录下生成一个新的名为output_shp_file_name的shp文件）
         @params:
-        * shp_file_path: 原始的待处理的shp文件
         * output_shp_file_name: 输出的shp文件名，不要加.shp后缀
         * angle_threshold: 角度阈值
         @return:
         """
         driver = ogr.GetDriverByName("ESRI Shapefile")
-        datasource = driver.Open(shp_file_path, 1)
+        datasource = driver.Open(self.shp_file_path, 1)
         layer = datasource.GetLayer()
 
         src_srs = layer.GetSpatialRef()  # 获取原始的坐标系或投影
         tgt_srs = osr.SpatialReference()  # 获取目标的坐标系或投影， web mercator
         tgt_srs.ImportFromEPSG(3857)
         transform = osr.CoordinateTransformation(src_srs, tgt_srs)
+        
+        if os.path.exists(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp')):
+            driver.DeleteDataSource(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp'))
 
-        tgt_datasource = driver.CreateDataSource(os.path.split(shp_file_path)[0])
+        tgt_datasource = driver.CreateDataSource(os.path.split(self.shp_file_path)[0])
         tgt_geomtype = ogr.wkbPolygon
         tgt_layer = tgt_datasource.CreateLayer(output_shp_file_name, srs=tgt_srs, geom_type=tgt_geomtype)
         layerDefinition = layer.GetLayerDefn()  # 获取图层的字段信息
@@ -200,7 +203,7 @@ class PostProcessing:
             angle = -angle
         return angle
 
-    def remove_tail(self, shp_file_path, output_shp_file_name, index_threshold=10, dis_threshold=3, area_threshold=500):
+    def remove_tail(self, output_shp_file_name, index_threshold=10, dis_threshold=3, area_threshold=500):
         """
         @function: 去除多边形尾巴和分割多边形；（在原shp文件的同级目录下生成一个新的名为output_shp_file_name的shp文件）
         @params:
@@ -212,15 +215,18 @@ class PostProcessing:
         @return:
         """
         driver = ogr.GetDriverByName("ESRI Shapefile")
-        datasource = driver.Open(shp_file_path, 1)
+        datasource = driver.Open(self.shp_file_path, 1)
         layer = datasource.GetLayer()
 
         src_srs = layer.GetSpatialRef()  # 获取原始的坐标系或投影
         tgt_srs = osr.SpatialReference()  # 获取目标的坐标系或投影， web mercator
         tgt_srs.ImportFromEPSG(3857)
         transform = osr.CoordinateTransformation(src_srs, tgt_srs)
+        
+        if os.path.exists(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp')):
+            driver.DeleteDataSource(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp'))
 
-        tgt_datasource = driver.CreateDataSource(os.path.split(shp_file_path)[0])
+        tgt_datasource = driver.CreateDataSource(os.path.split(self.shp_file_path)[0])
         tgt_geomtype = ogr.wkbPolygon
         tgt_layer = tgt_datasource.CreateLayer(output_shp_file_name, srs=tgt_srs, geom_type=tgt_geomtype)
         layerDefinition = layer.GetLayerDefn()  # 获取图层的字段信息
@@ -353,24 +359,26 @@ class PostProcessing:
                 min_dis = tmp_dis
         return aim_pair
 
-    def get_minimum_rotated_rectangle(self, shp_file_path, output_shp_file_name):
+    def get_minimum_rotated_rectangle(self, output_shp_file_name):
         """
         @function: 获取最小外接矩形；（在原shp文件的同级目录下生成一个新的名为output_shp_file_name的shp文件）
         @params:
-        * shp_file_path: 原始的待处理的shp文件
         * output_shp_file_name: 输出的shp文件名，不要加.shp后缀
         @return:
         """
         driver = ogr.GetDriverByName("ESRI Shapefile")
-        datasource = driver.Open(shp_file_path, 1)
+        datasource = driver.Open(self.shp_file_path, 1)
         layer = datasource.GetLayer()
 
         src_srs = layer.GetSpatialRef()  # 获取原始的坐标系或投影
         tgt_srs = osr.SpatialReference()  # 获取目标的坐标系或投影， web mercator
         tgt_srs.ImportFromEPSG(3857)
         transform = osr.CoordinateTransformation(src_srs, tgt_srs)
+        
+        if os.path.exists(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp')):
+            driver.DeleteDataSource(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp'))
 
-        tgt_datasource = driver.CreateDataSource(os.path.split(shp_file_path)[0])
+        tgt_datasource = driver.CreateDataSource(os.path.split(self.shp_file_path)[0])
         tgt_geomtype = ogr.wkbPolygon
         tgt_layer = tgt_datasource.CreateLayer(output_shp_file_name, srs=tgt_srs, geom_type=tgt_geomtype)
         layerDefinition = layer.GetLayerDefn()  # 获取图层的字段信息
@@ -624,6 +632,9 @@ class PostProcessing:
         tgt_srs.ImportFromEPSG(3857)
         transform = osr.CoordinateTransformation(src_srs, tgt_srs)
         
+        if os.path.exists(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp')):
+            driver.DeleteDataSource(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp'))
+        
         tgt_datasource = driver.CreateDataSource(os.path.split(self.shp_file_path)[0])
         tgt_geomtype = ogr.wkbPolygon
         tgt_layer = tgt_datasource.CreateLayer(output_shp_file_name, srs=tgt_srs, geom_type=tgt_geomtype)
@@ -645,6 +656,57 @@ class PostProcessing:
             feat = ogr.Feature(layerDefinition)
             feat.SetGeometry(poly)
             tgt_layer.CreateFeature(feat)
+        
+        datasource.Destroy()
+        tgt_datasource.Destroy()
+    
+    def fill_hole(self, output_shp_file_name):
+        """
+        @function: 检查shp文件中Polygon的内环部分进行填充；（在原shp文件的同级目录下生成一个新的名为output_shp_file_name的shp文件）
+        @description:
+        * 直接判断Polygon里面包含的Shape数量，是2的话就是包含内外环，获取外环重新构建一个多边形；
+        @params:
+        * output_shp_file_name: 输出的shp文件名，不要加.shp后缀
+        @return:
+        * None
+        """
+        gdal.SetConfigOption("SHAPE_ENCODING", "")
+        driver = ogr.GetDriverByName("ESRI Shapefile")
+        datasource = driver.Open(self.shp_file_path, 1)
+        if os.path.exists(os.path.join(os.path.split(self.shp_file_path)[0], output_shp_file_name+".shp")):
+            driver.DeleteDataSource(os.path.join(os.path.split(self.shp_file_path)[0], output_shp_file_name+".shp"))
+        layer = datasource.GetLayer()
+        src_srs = layer.GetSpatialRef()  # 获取原始的坐标系或投影
+        tgt_srs = osr.SpatialReference()  # 获取目标的坐标系或投影， web mercator
+        tgt_srs.ImportFromEPSG(3857)
+        transform = osr.CoordinateTransformation(src_srs, tgt_srs)
+        
+        if os.path.exists(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp')):
+            driver.DeleteDataSource(os.path.join(os.path.split(self.shp_file_path)[0] + '/', output_shp_file_name + '.shp'))
+        
+        tgt_datasource = driver.CreateDataSource(os.path.split(self.shp_file_path)[0])
+        tgt_geomtype = ogr.wkbPolygon
+        tgt_layer = tgt_datasource.CreateLayer(output_shp_file_name, srs=tgt_srs, geom_type=tgt_geomtype)
+        layerDefinition = layer.GetLayerDefn()  # 获取图层的字段信息
+        for i in range(layerDefinition.GetFieldCount()):
+            tgt_layer.CreateField(layerDefinition.GetFieldDefn(i))
+        
+        feature = layer.GetFeature(396)
+        geom = feature.GetGeometryRef()
+        # from ipdb import set_trace; set_trace()
+        for feature in layer:
+            geom = feature.GetGeometryRef()
+            geom_tgt = geom.Clone()
+            geom_tgt.Transform(transform)
+            if geom_tgt.GetGeometryCount() < 2:
+                feature.SetGeometry(geom_tgt)
+                tgt_layer.CreateFeature(feature)
+            else:
+                geom_out_ring = geom_tgt.GetGeometryRef(0)
+                geom_tgt_polygon = ogr.Geometry(ogr.wkbPolygon)
+                geom_tgt_polygon.AddGeometry(geom_out_ring)
+                feature.SetGeometry(geom_tgt_polygon)
+                tgt_layer.CreateFeature(feature)                
         
         datasource.Destroy()
         tgt_datasource.Destroy()
